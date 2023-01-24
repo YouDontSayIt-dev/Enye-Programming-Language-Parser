@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
+
+#define MAX_WORDS 100
+#define MAX_LENGTH 30
 
 int lookahead;
 
@@ -59,15 +63,28 @@ void factor() {
 }
 
 int main() {
-    lookahead = getchar();
-    while (lookahead != EOF) {
-        if (lookahead >= 'a' && lookahead <= 'z') {
-            assignment();
-        } else {
-            printf("Error: unexpected token %c\n", lookahead);
-            exit(1);
-        }
-        lookahead = getchar();
+    char input[MAX_WORDS*MAX_LENGTH];
+    char *words[MAX_WORDS];
+    char delim[] = " ";
+    char* token;
+    int i = 0;
+
+    printf("Enter a series of strings: ");
+    fgets(input, MAX_WORDS*MAX_LENGTH, stdin);
+
+    // Use strtok to split input into words
+    token = strtok(input, delim);
+    while (token != NULL) {
+        words[i++] = token;
+        token = strtok(NULL, delim);
     }
+    int numWords = i;
+
+    // Print the words stored in the array
+    printf("The words entered were: \n");
+    for (int i = 0; i < numWords; i++) {
+        printf("%s\n", words[i]);
+    }
+
     return 0;
 }
