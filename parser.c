@@ -118,37 +118,11 @@ int main() {
     //     lookahead = getchar();
     // }
 
-    // printf("Enter a statement: ");
-    // fgets(input, 100, stdin);
-    // parse_declaration();
+    printf("Enter a statement: ");
+    fgets(input, 100, stdin);
+    parse_declaration();
 
-    FILE *file;
-    char *filename = "file.txt";
-    char word[100];
-    char **words;
-    int num_words = 0;
 
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening file\n");
-        return 1;
-    }
-
-    while (fscanf(file, "%s", word) != EOF) {
-        words = realloc(words, (num_words + 1) * sizeof(char *));
-        words[num_words] = malloc(strlen(word) + 1);
-        strcpy(words[num_words], word);
-        num_words++;
-    }
-
-    fclose(file);
-
-    //parse_declaration();
-
-    //Print the words in the array
-    for (int i = 0; i < num_words; i++) {
-        printf("%s\n", words[i]);
-    }
-        
+    
     return 0;
 }
