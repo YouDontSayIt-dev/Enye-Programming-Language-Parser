@@ -9,10 +9,15 @@ int num_words = 0;
 
 //DECLARATIVE STATEMENTS
 int pos;
+int expected;
 
 void parse_declaration();
 void parse_declarator();
 void parse_initializer();
+void assignment();
+void expression();
+void term();
+void factor();
 
 void parse_declaration() {
     if (strncmp(words[pos], "int", 3) == 0) {
@@ -51,6 +56,66 @@ void parse_initializer() {
     }
 }
 
+//ASSIGNMENT STATEMENTS
+void match(int expected) {
+    if (strcmp(words[pos], expected) == 0) {
+        pos++;
+    } else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+void match2(char* expected, int i) {
+    if (strcmp(words[pos], expected[i]) == 0) {
+        pos++;
+    } else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+void assignment() {
+    char* variable = lookahead;
+    match2(words, pos);
+    match('=');
+    expression();
+    match(';');
+    printf("Assigning value to variable %s\n", *variable);
+}
+
+void expression() {
+    term();
+    while (strcmp(words[pos], '+') == 0 || strcmp(words[pos], '-') == 0) {
+        match2(words, pos);
+        term();
+    }
+}
+
+void term() {
+    factor();
+    while (strcmp(words[pos], '*') == 0 || strcmp(words[pos], '/') == 0) {
+        match(words, pos);
+        factor();
+    }
+}
+
+void factor() {
+    match2(words, pos);
+    else if (strcmp(words[pos], '(') == 0) {
+        match('(');
+        expression();
+        match(')');
+    } else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+
+
+
+
 int main() {
     FILE *file;
     char *filename = "file.txt";
@@ -70,8 +135,14 @@ int main() {
 
     fclose(file);
 
-    parse_declaration();
-    // printf("%s", words[pos+1]);
+    // parse_declaration();
+    expression();
+    // if(words[pos] == "int"){
+    //     printf("int");
+    // }else
+    //     printf("not int");
+    // printf("%s", words[pos]);
+    // printf("%c", word[pos]);
 
     // Print the words in the array
     // for (int i = 0; i < num_words; i++) {
