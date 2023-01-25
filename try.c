@@ -20,20 +20,29 @@ void term();
 void factor();
 
 void parse_declaration() {
-    if (strncmp(words[pos], "int", 3) == 0) {
-        pos += 3;
+    if (strncmp(words[pos], "INT_KW", 6) == 0) {
+        // pos += 6;
+        pos++;
         parse_declarator();
         printf("Found int declaration\n");
     } 
-    else if (strncmp(words[pos], "char", 4) == 0) {
-        pos += 4;
+    else if (strncmp(words[pos], "CHAR_KW", 7) == 0) {
+        // pos += 7;
+        pos++;
         parse_declarator();
         printf("Found char declaration\n");
     } 
-    else if (strncmp(words[pos], "float", 5) == 0) {
-        pos += 5;
+    else if (strncmp(words[pos], "FLOAT_KW", 8) == 0) {
+        // pos += 8;
+        pos++;
         parse_declarator();
         printf("Found float declaration\n");
+    }
+    else if (strncmp(words[pos], "STRING_KW", 9) == 0) {
+        // pos += 9;
+        pos++;
+        parse_declarator();
+        printf("Found string declaration\n");
     }
     else {
         printf("Invalid declaration\n");
@@ -41,79 +50,80 @@ void parse_declaration() {
 }
 
 void parse_declarator() {
-    while (word[pos] != ';') {
-        if (word[pos] == '=') {
+    while (strcmp(words[pos], "SEMI_COLON") == 1) {
+        if (strcmp(words[pos], "ASS_OPR") == 0) {
+            // pos+=7;
             pos++;
             parse_initializer();
         }
+        // pos+= 10;
         pos++;
     }
 }
 
 void parse_initializer() {
-    while (word[pos] != ';') {
+    while (strcmp(words[pos], "SEMI_COLON") == 1) {
+        // pos+= 10;
         pos++;
     }
 }
+
 
 //ASSIGNMENT STATEMENTS
-void match(int expected) {
-    if (strcmp(words[pos], expected) == 0) {
-        pos++;
-    } else {
-        printf("Error: unexpected token %s\n", words[pos]);
-        exit(1);
-    }
-}
+// void match(int expected) {
+//     if (strcmp(words[pos], expected) == 0) {
+//         pos++;
+//     } else {
+//         printf("Error: unexpected token %s\n", words[pos]);
+//         exit(1);
+//     }
+// }
 
-void match2(char* expected, int i) {
-    if (strcmp(words[pos], expected[i]) == 0) {
-        pos++;
-    } else {
-        printf("Error: unexpected token %s\n", words[pos]);
-        exit(1);
-    }
-}
+// void match2(char* expected, int i) {
+//     if (strcmp(words[pos], expected[i]) == 0) {
+//         pos++;
+//     } else {
+//         printf("Error: unexpected token %s\n", words[pos]);
+//         exit(1);
+//     }
+// }
 
-void assignment() {
-    char* variable = lookahead;
-    match2(words, pos);
-    match('=');
-    expression();
-    match(';');
-    printf("Assigning value to variable %s\n", *variable);
-}
+// void assignment() {
+//     char* variable = lookahead;
+//     match2(words, pos);
+//     match('=');
+//     expression();
+//     match(';');
+//     printf("Assigning value to variable %s\n", *variable);
+// }
 
-void expression() {
-    term();
-    while (strcmp(words[pos], '+') == 0 || strcmp(words[pos], '-') == 0) {
-        match2(words, pos);
-        term();
-    }
-}
+// void expression() {
+//     term();
+//     while (strcmp(words[pos], '+') == 0 || strcmp(words[pos], '-') == 0) {
+//         match2(words, pos);
+//         term();
+//     }
+// }
 
-void term() {
-    factor();
-    while (strcmp(words[pos], '*') == 0 || strcmp(words[pos], '/') == 0) {
-        match(words, pos);
-        factor();
-    }
-}
+// void term() {
+//     factor();
+//     while (strcmp(words[pos], '*') == 0 || strcmp(words[pos], '/') == 0) {
+//         match(words, pos);
+//         factor();
+//     }
+// }
 
-void factor() {
-    match2(words, pos);
-    else if (strcmp(words[pos], '(') == 0) {
-        match('(');
-        expression();
-        match(')');
-    } else {
-        printf("Error: unexpected token %s\n", words[pos]);
-        exit(1);
-    }
-}
-
-
-
+// void factor() {
+//     match2(words, pos);
+//     else if (strcmp(words[pos], '(') == 0) {
+//         match('(');
+//         expression();
+//         match(')');
+//     } else {
+//         printf("Error: unexpected token %s\n", words[pos]);
+//         exit(1);
+//     }
+// }
 
 
 int main() {
@@ -135,8 +145,8 @@ int main() {
 
     fclose(file);
 
-    // parse_declaration();
-    expression();
+    parse_declaration();
+    // expression();
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
