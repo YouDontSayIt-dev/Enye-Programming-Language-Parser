@@ -119,10 +119,10 @@ void term() {
 }
 
 void factor() {
-    if (strcmp(words[pos], "REAL_NUMBER") == 0) {
+    if (strcmp(words[pos], "REAL_NUMBER") == 0 || strcmp(words[pos], "INTEGER") == 0) {
         match(words[pos]);
-    // } else if (lookahead >= 'a' && lookahead <= 'z') {
-    //     match(lookahead);
+    } else if (strcmp(words[pos], "IDENTIFIER") == 0) {
+        match(words[pos]);
     } else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
         expression();
