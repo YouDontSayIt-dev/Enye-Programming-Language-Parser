@@ -153,6 +153,14 @@ void output_statement() {
     printf("Found output statement");
 }
 
+//INPUT STATEMENT
+void input_statement() {
+    match("SCANF_KW");
+    expression();
+    match("SEMI_COLON");
+    printf("Found input statement");
+}
+
 int main() {
     FILE *file;
     char *filename = "file.txt";
@@ -174,7 +182,8 @@ int main() {
 
     // parse_declaration();
     // assignment();
-    output_statement();
+    // output_statement();
+    input_statement();
 
     // if(words[pos] == "int"){
     //     printf("int");
