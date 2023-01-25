@@ -176,6 +176,7 @@ void iterative_statement(){
     printf("Found for loop");
 }
 
+
 void rel_opr(){
     if (strcmp(words[pos], "GREAT_OPR") == 0 ){
         match(words[pos]);
@@ -186,15 +187,37 @@ void rel_opr(){
     else if (strcmp(words[pos], "NOT_OPR") == 0){ 
         match(words[pos]);
     }
+    else if (strcmp(words[pos], "EQ_TO_OPR") == 0){ 
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "NOT_EQUAL_TO_OPR") == 0){ 
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "GRTR_THAN_OR_EQ_TO_OPR") == 0){ 
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "LESS_THAN_OR_EQ_TO_OPR") == 0){ 
+        match(words[pos]);
+    }
+}
+
+void log_opr(){
+    if (strcmp(words[pos], "AND_OPR") == 0 ){
+        match(words[pos]);
+    } 
+    else if (strcmp(words[pos], "OR_OPR") == 0){
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "NOT_OPR") == 0){ 
+        match(words[pos]);
+    }
 }
 
 void cond(){
-    if (strcmp(words[pos], "IDENTIFIER") == 0 || strcmp(words[pos], "INTEGER") == 0) { 
-        match(words[pos]);
+        variable();
         rel_opr();
         variable();
     }
-}
 
 void constants(){
     if (strcmp(words[pos], "INTEGER") == 0){
@@ -226,7 +249,14 @@ void unary_opr(){
     }
 }
 
-void conditio
+// Conditional Statements
+void conditional_stmt(){
+    match("IF_KW");
+    cond();
+    expression();
+    match("SEMI_COLON");
+    printf("Found if statement");
+}
 
 int main() {
     FILE *file;
@@ -246,13 +276,12 @@ int main() {
     }
 
     fclose(file);
-
     // parse_declaration();
     // assignment();
     // output_statement();
     //input_statement();
     //iterative_statement();
-
+    conditional_stmt();
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
