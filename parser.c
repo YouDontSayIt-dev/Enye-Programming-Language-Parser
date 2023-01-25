@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-#define MAX_WORDS 100
-#define MAX_LENGTH 30
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int lookahead;
 
@@ -62,29 +60,95 @@ void factor() {
     }
 }
 
-int main() {
-    char input[MAX_WORDS*MAX_LENGTH];
-    char *words[MAX_WORDS];
-    char delim[] = " ";
-    char* token;
-    int i = 0;
 
-    printf("Enter a series of strings: ");
-    fgets(input, MAX_WORDS*MAX_LENGTH, stdin);
+//DECLARATIVE STATEMENTS
+int pos;
+char input[100];
 
-    // Use strtok to split input into words
-    token = strtok(input, delim);
-    while (token != NULL) {
-        words[i++] = token;
-        token = strtok(NULL, delim);
+void parse_declaration();
+void parse_declarator();
+void parse_initializer();
+
+void parse_declaration() {
+    if (strncmp(&input[pos], "int", 3) == 0) {
+        pos += 3;
+        parse_declarator();
+        printf("Found int declaration\n");
+    } 
+    else if (strncmp(&input[pos], "char", 4) == 0) {
+        pos += 4;
+        parse_declarator();
+        printf("Found char declaration\n");
+    } 
+    else if (strncmp(&input[pos], "float", 5) == 0) {
+        pos += 5;
+        parse_declarator();
+        printf("Found float declaration\n");
     }
-    int numWords = i;
+    else {
+        printf("Invalid declaration\n");
+    }
+}
 
-    // Print the words stored in the array
-    printf("The words entered were: \n");
-    for (int i = 0; i < numWords; i++) {
+void parse_declarator() {
+    while (input[pos] != ';') {
+        if (input[pos] == '=') {
+            pos++;
+            parse_initializer();
+        }
+        pos++;
+    }
+}
+
+void parse_initializer() {
+    while (input[pos] != ';') {
+        pos++;
+    }
+}
+
+int main() {
+    // lookahead = getchar();
+    // while (lookahead != EOF) {
+    //     if (lookahead >= 'a' && lookahead <= 'z') {
+    //         assignment();
+    //     } else {
+    //         printf("Error: unexpected token %c\n", lookahead);
+    //         exit(1);
+    //     }
+    //     lookahead = getchar();
+    // }
+
+    // printf("Enter a statement: ");
+    // fgets(input, 100, stdin);
+    // parse_declaration();
+
+    FILE *file;
+    char *filename = "file.txt";
+    char word[100];
+    char **words;
+    int num_words = 0;
+
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        return 1;
+    }
+
+    while (fscanf(file, "%s", word) != EOF) {
+        words = realloc(words, (num_words + 1) * sizeof(char *));
+        words[num_words] = malloc(strlen(word) + 1);
+        strcpy(words[num_words], word);
+        num_words++;
+    }
+
+    fclose(file);
+
+    //parse_declaration();
+
+    //Print the words in the array
+    for (int i = 0; i < num_words; i++) {
         printf("%s\n", words[i]);
     }
-
+        
     return 0;
 }
