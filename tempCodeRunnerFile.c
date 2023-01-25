@@ -1,54 +1,43 @@
-void match(int expected) {
-//     if (strcmp(words[pos], expected) == 0) {
+int pos;
+// char input[100];
+
+// void parse_declaration();
+// void parse_declarator();
+// void parse_initializer();
+
+// void parse_declaration() {
+//     if (strncmp(&input[pos], "int", 3) == 0) {
+//         pos += 3;
+//         parse_declarator();
+//         printf("Found int declaration\n");
+//     } 
+//     else if (strncmp(&input[pos], "char", 4) == 0) {
+//         pos += 4;
+//         parse_declarator();
+//         printf("Found char declaration\n");
+//     } 
+//     else if (strncmp(&input[pos], "float", 5) == 0) {
+//         pos += 5;
+//         parse_declarator();
+//         printf("Found float declaration\n");
+//     }
+//     else {
+//         printf("Invalid declaration\n");
+//     }
+// }
+
+// void parse_declarator() {
+//     while (input[pos] != ';') {
+//         if (input[pos] == '=') {
+//             pos++;
+//             parse_initializer();
+//         }
 //         pos++;
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
 //     }
 // }
 
-// void match2(char* expected, int i) {
-//     if (strcmp(words[pos], expected[i]) == 0) {
+// void parse_initializer() {
+//     while (input[pos] != ';') {
 //         pos++;
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
-//     }
-// }
-
-// void assignment() {
-//     char* variable = lookahead;
-//     match2(words, pos);
-//     match('=');
-//     expression();
-//     match(';');
-//     printf("Assigning value to variable %s\n", *variable);
-// }
-
-// void expression() {
-//     term();
-//     while (strcmp(words[pos], '+') == 0 || strcmp(words[pos], '-') == 0) {
-//         match2(words, pos);
-//         term();
-//     }
-// }
-
-// void term() {
-//     factor();
-//     while (strcmp(words[pos], '*') == 0 || strcmp(words[pos], '/') == 0) {
-//         match(words, pos);
-//         factor();
-//     }
-// }
-
-// void factor() {
-//     match2(words, pos);
-//     else if (strcmp(words[pos], '(') == 0) {
-//         match('(');
-//         expression();
-//         match(')');
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
 //     }
 // }

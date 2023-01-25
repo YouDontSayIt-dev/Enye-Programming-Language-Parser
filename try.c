@@ -70,61 +70,78 @@ void parse_initializer() {
 
 
 //ASSIGNMENT STATEMENTS
-// void match(int expected) {
-//     if (strcmp(words[pos], expected) == 0) {
-//         pos++;
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
+void match(char* expected) {
+    if (strcmp(words[pos], expected) == 0) {
+        pos++;
+    } else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+void match2(char** expected, int i) {
+    if (strcmp(words[pos], expected[i]) == 0) {
+        pos++;
+    } else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+void assignment() {
+    char* variable = words[pos];
+    match2(words, pos);
+    if(strcmp(words[pos], "SEMI_COLON") == 0){
+        match("SEMI_COLON");
+        printf("Assigning value to variable %s\n", variable);
+    }else{
+        match("ASS_OPR");
+        expression();
+        match("SEMI_COLON");
+        printf("Assigning value to variable %s\n", variable);
+    }
+}
+
+void expression() {
+    term();
+    while (strcmp(words[pos], "ADD_OPR") == 0 || strcmp(words[pos], "SUBT_OPR") == 0) {
+        match2(words, pos);
+        term();
+    }
+}
+
+void term() {
+    factor();
+    while (strcmp(words[pos], "MULT_OPR") == 0 || strcmp(words[pos], "DIV_OPR") == 0) {
+        match2(words, pos);
+        factor();
+    }
+}
+
+void factor() {
+    if (strcmp(words[pos], "REAL_NUMBER") == 0) {
+        match(words[pos]);
+    // } else if (lookahead >= 'a' && lookahead <= 'z') {
+    //     match(lookahead);
+    } else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
+        match("LEFT_PARENTHESIS");
+        expression();
+        match("RIGHT_PARENTHESIS");
+    }else {
+        printf("Error: unexpected token %s\n", words[pos]);
+        exit(1);
+    }
+}
+
+// void print(char** expected, int i) {
+//     printf("%s", expected[i]);
+// }
+
+// void print(char* expected){
+//     if(strcmp(expected, "STRING_KW") == 0){
+//         printf("YEHEY");
 //     }
 // }
-
-// void match2(char* expected, int i) {
-//     if (strcmp(words[pos], expected[i]) == 0) {
-//         pos++;
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
-//     }
-// }
-
-// void assignment() {
-//     char* variable = lookahead;
-//     match2(words, pos);
-//     match('=');
-//     expression();
-//     match(';');
-//     printf("Assigning value to variable %s\n", *variable);
-// }
-
-// void expression() {
-//     term();
-//     while (strcmp(words[pos], '+') == 0 || strcmp(words[pos], '-') == 0) {
-//         match2(words, pos);
-//         term();
-//     }
-// }
-
-// void term() {
-//     factor();
-//     while (strcmp(words[pos], '*') == 0 || strcmp(words[pos], '/') == 0) {
-//         match(words, pos);
-//         factor();
-//     }
-// }
-
-// void factor() {
-//     match2(words, pos);
-//     else if (strcmp(words[pos], '(') == 0) {
-//         match('(');
-//         expression();
-//         match(')');
-//     } else {
-//         printf("Error: unexpected token %s\n", words[pos]);
-//         exit(1);
-//     }
-// }
-
 
 int main() {
     FILE *file;
@@ -145,14 +162,18 @@ int main() {
 
     fclose(file);
 
-    parse_declaration();
-    // expression();
+    // parse_declaration();
+    assignment();
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
     //     printf("not int");
     // printf("%s", words[pos]);
     // printf("%c", word[pos]);
+
+    // char* variable = words[pos];
+    // printf("%s", variable);
+    // print("STRING_KW");
 
     // Print the words in the array
     // for (int i = 0; i < num_words; i++) {

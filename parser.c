@@ -1,7 +1,5 @@
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 int lookahead;
 
@@ -60,69 +58,16 @@ void factor() {
     }
 }
 
-
-//DECLARATIVE STATEMENTS
-int pos;
-char input[100];
-
-void parse_declaration();
-void parse_declarator();
-void parse_initializer();
-
-void parse_declaration() {
-    if (strncmp(&input[pos], "int", 3) == 0) {
-        pos += 3;
-        parse_declarator();
-        printf("Found int declaration\n");
-    } 
-    else if (strncmp(&input[pos], "char", 4) == 0) {
-        pos += 4;
-        parse_declarator();
-        printf("Found char declaration\n");
-    } 
-    else if (strncmp(&input[pos], "float", 5) == 0) {
-        pos += 5;
-        parse_declarator();
-        printf("Found float declaration\n");
-    }
-    else {
-        printf("Invalid declaration\n");
-    }
-}
-
-void parse_declarator() {
-    while (input[pos] != ';') {
-        if (input[pos] == '=') {
-            pos++;
-            parse_initializer();
-        }
-        pos++;
-    }
-}
-
-void parse_initializer() {
-    while (input[pos] != ';') {
-        pos++;
-    }
-}
-
 int main() {
-    // lookahead = getchar();
-    // while (lookahead != EOF) {
-    //     if (lookahead >= 'a' && lookahead <= 'z') {
-    //         assignment();
-    //     } else {
-    //         printf("Error: unexpected token %c\n", lookahead);
-    //         exit(1);
-    //     }
-    //     lookahead = getchar();
-    // }
-
-    printf("Enter a statement: ");
-    fgets(input, 100, stdin);
-    parse_declaration();
-
-
-    
+    lookahead = getchar();
+    while (lookahead != EOF) {
+        if (lookahead >= 'a' && lookahead <= 'z') {
+            assignment();
+        } else {
+            printf("Error: unexpected token %c\n", lookahead);
+            exit(1);
+        }
+        lookahead = getchar();
+    }
     return 0;
 }
