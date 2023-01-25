@@ -19,6 +19,12 @@ void expression();
 void term();
 void factor();
 
+void cond();
+void rel_opr();
+void unary_opr();
+void variable();
+void constant();
+
 void parse_declaration() {
     if (strncmp(words[pos], "INT_KW", 6) == 0) {
         // pos += 6;
@@ -92,7 +98,7 @@ void assignment() {
     char* variable = words[pos];
     match2(words, pos);
     if(strcmp(words[pos], "SEMI_COLON") == 0){
-        match("SEMI_COLON");
+        match("SEMI_COLON");                
         printf("Assigning value to variable %s\n", variable);
     }else{
         match("ASS_OPR");
@@ -143,6 +149,85 @@ void factor() {
 //     }
 // }
 
+//OUTPUT STATEMENT
+void output_statement() {
+    match("PRINTF_KW");
+    expression();
+    match("SEMI_COLON");
+    printf("Found output statement");
+}
+
+//INPUT STATEMENT
+void input_statement() {
+    match("SCANF_KW");
+    expression();
+    match("SEMI_COLON");
+    printf("Found input statement");
+}
+
+
+// ITERATIVE STATEMENT
+void iterative_statement(){
+    match("FOR_KW");
+    assignment();
+    cond();
+    match("SEMI_COLON");
+    unary_opr();
+    printf("Found for loop");
+}
+
+void rel_opr(){
+    if (strcmp(words[pos], "GREAT_OPR") == 0 ){
+        match(words[pos]);
+    } 
+    else if (strcmp(words[pos], "LESS_OPR") == 0){
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "NOT_OPR") == 0){ 
+        match(words[pos]);
+    }
+}
+
+void cond(){
+    if (strcmp(words[pos], "IDENTIFIER") == 0 || strcmp(words[pos], "INTEGER") == 0) { 
+        match(words[pos]);
+        rel_opr();
+        variable();
+    }
+}
+
+void constants(){
+    if (strcmp(words[pos], "INTEGER") == 0){
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "REAL_NUMBER") == 0){
+        match(words[pos]);
+    }
+    else if (strcmp(words[pos], "STRING_LITERAL") == 0){
+        match(words[pos]);
+    }
+}
+
+void variable(){
+    if (strcmp(words[pos], "IDENTIFIER") == 0){
+        match(words[pos]);
+    }
+    else{
+        constants();
+        }
+}
+
+void unary_opr(){
+    if (strcmp(words[pos], "INC_OPR") == 0 ){
+        match(words[pos]);
+    } 
+    else if (strcmp(words[pos], "DEC_OPR") == 0){
+        match(words[pos]);
+    }
+}
+
+void conditio
+
 int main() {
     FILE *file;
     char *filename = "file.txt";
@@ -163,7 +248,11 @@ int main() {
     fclose(file);
 
     // parse_declaration();
-    assignment();
+    // assignment();
+    // output_statement();
+    //input_statement();
+    //iterative_statement();
+
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
