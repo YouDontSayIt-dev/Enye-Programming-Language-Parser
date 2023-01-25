@@ -104,7 +104,7 @@ void assignment() {
 
 void expression() {
     term();
-    while (strcmp(words[pos], "ADD_OPR") == 0 || strcmp(words[pos], "SUBT_OPR") == 0) {
+    while (strcmp(words[pos], "ADD_OPR") == 0 || strcmp(words[pos], "SUBT_OPR") == 0 || strcmp(words[pos], "COMMA") == 0) {
         match2(words, pos);
         term();
     }
@@ -123,7 +123,9 @@ void factor() {
         match(words[pos]);
     } else if (strcmp(words[pos], "IDENTIFIER") == 0) {
         match(words[pos]);
-    } else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
+    }else if (strcmp(words[pos], "STRING_LIT") == 0) {
+        match(words[pos]);
+    }else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
         expression();
         match("RIGHT_PARENTHESIS");
@@ -142,6 +144,14 @@ void factor() {
 //         printf("YEHEY");
 //     }
 // }
+
+//OUTPUT STATEMENT
+void output_statement() {
+    match("PRINTF_KW");
+    expression();
+    match("SEMI_COLON");
+    printf("Found output statement");
+}
 
 int main() {
     FILE *file;
@@ -163,7 +173,9 @@ int main() {
     fclose(file);
 
     // parse_declaration();
-    assignment();
+    // assignment();
+    output_statement();
+
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
