@@ -30,7 +30,7 @@ void tokenRoleReservedWords(char* str);
 void tokenRoleCommentChecker(char* str);
 void tokenRoleContentChecker(char* str);
 
-
+int identifierFlag = 0;
 
 
 

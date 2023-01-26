@@ -1,14 +1,16 @@
 
-basahin			SCANF_KW
+kapag				IF_KW
 
 (				LEFT_PARENTHESIS
 
-String			STRING_LITERAL
-
-,				COMMA
-
 ny_int		IDENTIFIER
+
+==				EQ_TO_OPR
+
+1				INTEGER
 
 )				RIGHT_PARENTHESIS
 
-;				SEMI_COLON
+{				LEFT_CURLY_BRACES
+
+}				RIGHT_CURLY_BRACES

@@ -1,1 +1,1 @@
-basahin("String", ny_int);
+kapag (ny_int == 1){}

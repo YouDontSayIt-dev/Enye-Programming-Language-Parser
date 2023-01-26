@@ -210,6 +210,10 @@ void factor() {
     }else if (strcmp(currentToken, "STRING_LITERAL") == 0){
         match(currentToken);
         parseToken();
+        while(strcmp(currentToken, "STRING_LITERAL") == 0){
+            match(currentToken);
+            parseToken();
+        }
     }else if (strcmp(currentToken, "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
         parseToken();
@@ -271,22 +275,29 @@ void input_statement() {
 void iterative_statement(){ 
     match("FOR_KW");
     parseToken();
+    match("LEFT_PARENTHESIS");
+    parseToken();
     assignment();
     parseToken();
     cond();
     parseToken();
     match("SEMI_COLON");
     parseToken();
+    match("IDENTIFIER");
+    parseToken();
     unary_opr();
+    parseToken();
+    match("RIGHT_PARENTHESIS");
     parseToken();
     match("LEFT_CURLY_BRACES");
     parseToken();
-    stmt();
-    parseToken();
     match("RIGHT_CURLY_BRACES");
-    printf("Found for loop");
+    if(errorFlag == 0){
+        printf("Parsing iterative statement success\n");
+    }else{
+        printf("Parsing iterative statement failed");
+    }
 }
-
 
 void rel_opr(){
     if (strcmp(currentToken, "GREAT_OPR") == 0 ){
@@ -330,12 +341,6 @@ void cond(){
         rel_opr();
         parseToken();
         variable();
-        parseToken();
-        match("LEFT_CURLY_BRACES");
-        parseToken();
-        stmt();
-        parseToken();
-        match("RIGHT_CURLY_BRACES");
     }
 
 void constants(){
@@ -372,12 +377,22 @@ void unary_opr(){
 void conditional_stmt(){
     match("IF_KW");
     parseToken();
+    match("LEFT_PARENTHESIS");
+    parseToken();
     cond();
+    parseToken();
+    match("RIGHT_PARENTHESIS");
+    parseToken();
     match("LEFT_CURLY_BRACES");
-    stmt();
+    parseToken();
     match("RIGHT_CURLY_BRACES");
-    printf("Found if statement");
+    if(errorFlag == 0){
+        printf("Parsing conditional statement success\n");
+    }else{
+        printf("Parsing conditional statement failed");
+    }
 }
+
 // START OF GRAMMAR RULE
 void parser(){
     do{
@@ -397,9 +412,9 @@ void stmt(){
     //  parse_declaration();
     //  assignment();
     // output_statement();
-      input_statement();
+     // input_statement();
     //  iterative_statement();
-    //  conditional_stmt();
+      conditional_stmt();
 }
 
 void parseToken(){
