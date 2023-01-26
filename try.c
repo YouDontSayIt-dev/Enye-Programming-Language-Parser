@@ -291,6 +291,8 @@ void iterative_statement(){
     parseToken();
     match("LEFT_CURLY_BRACES");
     parseToken();
+    stmt();
+    parseToken();
     match("RIGHT_CURLY_BRACES");
     if(errorFlag == 0){
         printf("Parsing iterative statement success\n");
@@ -385,6 +387,8 @@ void conditional_stmt(){
     parseToken();
     match("LEFT_CURLY_BRACES");
     parseToken();
+    stmt();
+    parseToken();
     match("RIGHT_CURLY_BRACES");
     if(errorFlag == 0){
         printf("Parsing conditional statement success\n");
@@ -409,12 +413,28 @@ void stmts(){
 
 void stmt(){
     
-    //  parse_declaration();
-    //  assignment();
-    // output_statement();
-     // input_statement();
-    //  iterative_statement();
-      conditional_stmt();
+      if(strcmp(currentToken, "INT_KW") == 0 || strcmp(currentToken, "FLOAT_KW") == 0 
+      || strcmp(currentToken, "CHAR_KW") == 0 || strcmp(currentToken, "STRING_KW") == 0){
+        parse_declaration();}
+        else if(strcmp(currentToken, "IDENTIFIER") == 0){
+            assignment();
+        }
+        else if(strcmp(currentToken, "PRINTF_KW") == 0){
+            output_statement();
+        }
+        else if(strcmp(currentToken, "SCANF_KW") == 0){
+            parseToken();
+            input_statement();
+        }
+        else if(strcmp(currentToken, "FOR_KW") == 0){
+            iterative_statement();
+        }
+        else if(strcmp(currentToken, "IF_KW") == 0){
+            conditional_stmt();
+        }
+        else{
+            printf("Error in line %d: Invalid statement", lineNo);
+        }
 }
 
 void parseToken(){
