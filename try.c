@@ -17,9 +17,11 @@ char currentToken[20];
 int lineNo = 0;
 int lineNoMax = 0;
 int errorFlag = 0;
+int stmtFlag = 0;
+
 
 char lexerContent;
-char lexerData[1000];
+char lexerData[2000];
 
 FILE *file;
 char *filename = "example/SymbolTable.txt";
@@ -40,6 +42,7 @@ void assignment();
 void expression();
 void term();
 void factor();
+void power();
 
 void cond();
 void rel_opr();
@@ -82,6 +85,7 @@ int main() {
        fclose(outputfptr);
        file = fopen(symbol_filepath, "r");
        parser();
+       printf("%d",errorFlag);
         fclose(file);
       
     
@@ -95,7 +99,6 @@ void parse_declaration() {
     data_type();
     parseToken();
     assignment();
-    lineNoMax = lineNo;
     //parse_declarator();
 }
 
@@ -113,7 +116,7 @@ void data_type(){
         printf("Found string declaration\n");
     }
     else {
-        printf("Invalid declaration at line: %d\n", lineNo);
+        printf("Invalid declaration at line: %d\n", stmtFlag);
         errorFlag = 1;
     }
 }
@@ -143,12 +146,15 @@ void data_type(){
 
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
-    if (strcmp(currentToken, expected) != 0) {
-        printf("Error: unexpected token %s at line: %d %s\n", currentToken, lineNo, expected);
+    if (strcmp("INVALID_IDENTIFIER", expected) == 0) {
+        printf("Error: unexpected token %s at line: %d\n", currentToken, lineNo);
+        errorFlag = 1;
+    }
+    else if (strcmp(currentToken, expected) != 0) {
+        printf("Error: unexpected token %s at line: %d\n", currentToken, lineNo);
         errorFlag = 1;
     }
 }
-
 // void match2(char** expected, int i) {
 //     if (strcmp(currentToken, expected[i]) == 0) {
 //         parseToken();
@@ -158,6 +164,7 @@ void match(char* expected) {
 //     }
 // }
 void assignment() {
+    
     match(currentToken);
     parseToken();
     if(strcmp(currentToken, "SEMI_COLON") == 0){
@@ -165,7 +172,7 @@ void assignment() {
         if(errorFlag == 0){
             printf("Parsing assignment statement success\n");
         }else{
-            printf("Parsing assignment statement failed");
+            printf("Parsing assignment statement failed\n");
         }
     }else if(strcmp(currentToken, "ASS_OPR") == 0){
         
@@ -176,7 +183,7 @@ void assignment() {
         if(errorFlag == 0){
             printf("Parsing assignment statement success\n");
         }else{
-            printf("Parsing assignment statement failed");
+            printf("Parsing assignment statement failed\n");
     }
     }
 }
@@ -219,6 +226,9 @@ void factor() {
     } else if (strcmp(currentToken, "IDENTIFIER") == 0) {
         match(currentToken);
         parseToken();
+    }else if (strcmp(currentToken, "INVALID_IDENTIFIER") == 0) {
+        printf("Error: unexpected token %s at line no: %d\n", currentToken, lineNo);
+        errorFlag = 1;
     }else if (strcmp(currentToken, "STRING_LITERAL") == 0){
         match(currentToken);
         parseToken();
@@ -233,8 +243,8 @@ void factor() {
         match("RIGHT_PARENTHESIS");
         parseToken();
     }else {
-        printf("Error: unexpected token %s at line no: %d\n", currentToken, lineNo);
-        errorFlag = 1;;
+        printf("Error: unexpected token %s at line %d\n", currentToken, stmtFlag);
+        errorFlag = 1;
     }
 }
 
@@ -387,6 +397,44 @@ void unary_opr(){
     }
 }
 
+void else_stmt(){
+    match("ELSE_KW");
+    parseToken();
+    match("LEFT_CURLY_BRACES");
+    parseToken();
+    stmt();
+    parseToken();
+    match("RIGHT_CURLY_BRACES");
+    if(errorFlag == 0){
+        printf("Parsing else statement success\n");
+    }else{
+        printf("Parsing else statement failed");
+    }
+}
+
+void else_if_stmt(){
+    match("ELSE_KW");
+    parseToken();
+    match("IF_KW");
+    parseToken();
+    match("LEFT_PARENTHESIS");
+    parseToken();
+    cond();
+    parseToken();
+    match("RIGHT_PARENTHESIS");
+    parseToken();
+    match("LEFT_CURLY_BRACES");
+    parseToken();
+    stmt();
+    parseToken();
+    match("RIGHT_CURLY_BRACES");
+    if(errorFlag == 0){
+        printf("Parsing else if statement success\n");
+    }else{
+        printf("Parsing else if statement failed");
+    }
+}
+
 // Conditional Statements
 void conditional_stmt(){
     match("IF_KW");
@@ -415,27 +463,31 @@ void parser(){
          parseToken();
          stmts();
          lineNoMax++;
-    }while(lineNo <= lineNoMax);
-       
+         stmtFlag++;
+    }while(stmtFlag >= lineNoMax);
+
+    if(errorFlag == 0){
+        printf("Parsing success\n");
+}
 }
 
 void stmts(){
+    errorFlag=0;
     stmt();
+    
 }
 
 void stmt(){
-    
       if(strcmp(currentToken, "INT_KW") == 0 || strcmp(currentToken, "FLOAT_KW") == 0 
       || strcmp(currentToken, "CHAR_KW") == 0 || strcmp(currentToken, "STRING_KW") == 0){
         parse_declaration();}
         else if(strcmp(currentToken, "IDENTIFIER") == 0){
-            assignment();
+            assignment();  
         }
         else if(strcmp(currentToken, "PRINTF_KW") == 0){
             output_statement();
         }
         else if(strcmp(currentToken, "SCANF_KW") == 0){
-            parseToken();
             input_statement();
         }
         else if(strcmp(currentToken, "FOR_KW") == 0){
@@ -444,8 +496,17 @@ void stmt(){
         else if(strcmp(currentToken, "IF_KW") == 0){
             conditional_stmt();
         }
+        else if(strcmp(currentToken, "ELSE_KW") == 0){
+            else_stmt();
+        }
+        else if(strcmp(currentToken, "ELSE_KW") == 0){
+            parseToken();
+            if(strcmp(currentToken, "IF_KW") == 0){
+                else_if_stmt();
+            }
+        }
         else{
-            printf("Error in line %d: Invalid statement", lineNo);
+            printf("Error in line %d: Invalid statement", stmtFlag);
         }
 }
 

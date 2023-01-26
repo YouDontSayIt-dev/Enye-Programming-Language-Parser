@@ -1,62 +1,32 @@
 
 numero			INT_KW
 
-ny_int		IDENTIFIER
+ny_nmr		IDENTIFIER
 
 ;				SEMI_COLON
 
-kapag				IF_KW
+numero			INT_KW
 
-(				LEFT_PARENTHESIS
-
-ny_int		IDENTIFIER
-
-<				LESS_OPR
-
-5				INTEGER
-
-)				RIGHT_PARENTHESIS
-
-{				LEFT_CURLY_BRACES
-
-bawat				FOR_KW
-
-(				LEFT_PARENTHESIS
-
-ny_int		IDENTIFIER
+ny_nmr		IDENTIFIER
 
 =				ASS_OPR
 
-0				INTEGER
+;				SEMI_COLON
+
+numero			INT_KW
+
+ny_panint		IDENTIFIER
 
 ;				SEMI_COLON
 
-ny_int		IDENTIFIER
+lipon				STRING_KW
 
-<				LESS_OPR
+ny_salita		IDENTIFIER
 
-5				INTEGER
+=				ASS_OPR
 
-;				SEMI_COLON
+Mga			STRING_LITERAL
 
-ny_int		IDENTIFIER
-
-++				INC_OPR
-
-)				RIGHT_PARENTHESIS
-
-{				LEFT_CURLY_BRACES
-
-ipakita			PRINTF_KW
-
-(				LEFT_PARENTHESIS
-
-Mabuhay			STRING_LITERAL
-
-)				RIGHT_PARENTHESIS
+Mga			STRING_LITERAL
 
 ;				SEMI_COLON
-
-}				RIGHT_CURLY_BRACES
-
-}				RIGHT_CURLY_BRACES
