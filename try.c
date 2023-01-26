@@ -191,8 +191,20 @@ void expression() {
 }
 
 void term() {
+    power();
+    while (strcmp(currentToken, "MULT_OPR") == 0 || strcmp(currentToken, "DIV_OPR") == 0 || 
+    strcmp(currentToken, "MOD_OPR") == 0 || strcmp(currentToken, "INT_DIV_OPR") == 0) {
+        match(currentToken);
+        parseToken();
+        power();
+    }
+}
+
+
+
+void power(){
     factor();
-    while (strcmp(currentToken, "MULT_OPR") == 0 || strcmp(currentToken, "DIV_OPR") == 0) {
+    while (strcmp(currentToken, "EXP_OPR") == 0) {
         match(currentToken);
         parseToken();
         factor();
