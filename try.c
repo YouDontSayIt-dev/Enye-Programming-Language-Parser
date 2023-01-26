@@ -121,29 +121,6 @@ void data_type(){
     }
 }
 
-
-
-
-// void parse_declarator() {
-//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
-//         if (strcmp(currentToken, "ASS_OPR") == 0) {
-//             // pos+=7;
-//             pos++;
-//             parse_initializer();
-//         }
-//         // pos+= 10;
-//         pos++;
-//     }
-// }
-
-// void parse_initializer() {
-//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
-//         // pos+= 10;
-//         pos++;
-//     }
-// }
-
-
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
     if (strcmp("INVALID_IDENTIFIER", expected) == 0) {
@@ -155,14 +132,7 @@ void match(char* expected) {
         errorFlag = 1;
     }
 }
-// void match2(char** expected, int i) {
-//     if (strcmp(currentToken, expected[i]) == 0) {
-//         parseToken();
-//     } else {
-//         printf("Error: unexpected token %s\n", currentToken);
-//         errorFlag = 1;
-//     }
-// }
+
 void assignment() {
     
     match(currentToken);
@@ -248,15 +218,6 @@ void factor() {
     }
 }
 
-// void print(char** expected, int i) {
-//     printf("%s", expected[i]);
-// }
-
-// void print(char* expected){
-//     if(strcmp(expected, "STRING_KW") == 0){
-//         printf("YEHEY");
-//     }
-// }
 
 //OUTPUT STATEMENT
 void output_statement() {
