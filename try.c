@@ -15,6 +15,8 @@ int strIndex = 0;
 char currentLexeme[100];
 char currentToken[20];
 int lineNo = 1;
+int lineNoMax = 1;
+int errorFlag = 0;
 
 FILE *file;
 char *filename = "example/SymbolTable.txt";
@@ -78,7 +80,9 @@ int main() {
        lexer(lexerData);
        fclose(outputfptr);
        file = fopen(symbol_filepath, "r");
+       getToken();
        parser();
+       printf("%d",lineNo);
         fclose(file);
       
     
@@ -89,8 +93,8 @@ int main() {
 }
 
 void parse_declaration() {
-    getToken();
     data_type();
+    getToken();
     assignment();
     //parse_declarator();
 }
@@ -110,6 +114,7 @@ void data_type(){
     }
     else {
         printf("Invalid declaration\n");
+        errorFlag = 1;
     }
 }
 
@@ -138,24 +143,25 @@ void data_type(){
 
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
-    if (strcmp(currentToken, expected) == 0) {
-    } else {
+    if (strcmp(currentToken, expected) != 0) {
         printf("Error: unexpected token %s\n", currentToken);
-        exit(1);
+        errorFlag = 1;
+    } else {
+        
+
     }
 }
 
-void match2(char** expected, int i) {
-    if (strcmp(currentToken, expected[i]) == 0) {
-        getToken();
-    } else {
-        printf("Error: unexpected token %s\n", currentToken);
-        exit(1);
-    }
-}
+// void match2(char** expected, int i) {
+//     if (strcmp(currentToken, expected[i]) == 0) {
+//         getToken();
+//     } else {
+//         printf("Error: unexpected token %s\n", currentToken);
+//         errorFlag = 1;
+//     }
+// }
 
 void assignment() {
-    getToken();
     match(currentToken);
     getToken();
     if(strcmp(currentToken, "SEMI_COLON") == 0){
@@ -203,7 +209,7 @@ void factor() {
         match("RIGHT_PARENTHESIS");
     }else {
         printf("Error: unexpected token %s\n", currentToken);
-        exit(1);
+        errorFlag = 1;;
     }
 }
 
@@ -337,8 +343,10 @@ void conditional_stmt(){
 }
 // START OF GRAMMAR RULE
 void parser(){
-
-    stmts();
+    
+         stmts();
+    
+   
 }
 
 void stmts(){
@@ -360,8 +368,8 @@ void getToken(){
     int index = 0;
 
     if(ch == '\n'){
-        lineNo++;
-        //printf("Line %d\n", lineNo);
+        
+        printf("Line %d\n", lineNo);
         ch = fgetc(file);
         while(ch=='\n'){
             ch = fgetc(file);
