@@ -1,7 +1,12 @@
+#include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
+#include <stdlib.h>
+#include <stdbool.h>
+#include <conio.h>
+#include "include/lexer.h"
+#include "include/main.h"
+#include "lexer.c"
 
 char word[100];
 char **words = NULL;
@@ -12,7 +17,10 @@ char currentToken[20];
 int lineNo = 1;
 
 FILE *file;
-char *filename = "SymbolTable.txt";
+char *filename = "example/SymbolTable.txt";
+char in_filepath[100],out_filepath[100] = "example/SymbolTable.txt",
+parser_filepath[100] = "example/ParsingInput.txt",symbol_filepath[100] = "example/SymbolTable.txt"; // file path variable
+  int len;
 
 
 //DECLARATIVE STATEMENTS
@@ -31,42 +39,78 @@ void cond();
 void rel_opr();
 void unary_opr();
 void variable();
-void constant();
+void constants();
 
 void getToken();
 void parser();
 void stmts();
 void stmt();
 
-void parse_declaration() {
-    getToken();
-    if (strncmp(currentToken, "INT_KW", 6) == 0) {
-        // pos += 6;
-        pos++;
-        parse_declarator();
+
+int main() {
+        /* FOR LEXER */
+      printf("Input file path: ");
+      scanf("%s",in_filepath);
+      len = strlen(in_filepath);
+      if (len <= 2) { // Checks if file path is invalid
+        printf("Invalid file path");
+        return 0;
+      }
+      // Checks if file extension is invalid
+      if(in_filepath[len-1] == 'y' && in_filepath[len-2] == 'n' && in_filepath[len-3] == '.'){
+            /* FOR LEXER */
+            inputfptr = fopen(in_filepath, "r");
+            outputfptr = fopen(out_filepath, "w");
+            
+            char lexerContent;
+            char lexerData[1000];  // variable to store contents of input file
+                for(int i=0; i<sizeof(lexerData); i++) {
+                    lexerContent = fgetc(inputfptr); // reads input file
+                    if(lexerContent == EOF) {
+                        break;
+                        }
+                            lexerData[i] = lexerContent;                
+                    }
+      
+      
+       fclose(inputfptr);    
+       lexer(lexerData);
+       fclose(outputfptr);
+       file = fopen(symbol_filepath, "r");
+       getToken();
+       parser();
+        fclose(file);
+      
+    
+
+
+    return 0;
+}
+}
+
+void data_type(){
+    if (strcmp(currentToken, "INT_KW")){
         printf("Found int declaration\n");
     } 
-    else if (strncmp(currentToken, "CHAR_KW", 7) == 0) {
-        // pos += 7;
-        pos++;
-        parse_declarator();
+    else if (strcmp(currentToken, "CHAR_KW") == 0) {
         printf("Found char declaration\n");
     } 
-    else if (strncmp(currentToken, "FLOAT_KW", 8) == 0) {
-        // pos += 8;
-        pos++;
-        parse_declarator();
+    else if (strcmp(currentToken, "FLOAT_KW") == 0) {
         printf("Found float declaration\n");
     }
-    else if (strncmp(currentToken, "STRING_KW", 9) == 0) {
-        // pos += 9;
-        pos++;
-        parse_declarator();
+    else if (strcmp(currentToken, "STRING_KW") == 0) {
         printf("Found string declaration\n");
     }
     else {
         printf("Invalid declaration\n");
     }
+}
+
+
+void parse_declaration() {
+    getToken();
+    data_type();
+    parse_declarator();
 }
 
 void parse_declarator() {
@@ -189,12 +233,15 @@ void input_statement() {
 
 
 // ITERATIVE STATEMENT
-void iterative_statement(){
+void iterative_statement(){ 
     match("FOR_KW");
     assignment();
     cond();
     match("SEMI_COLON");
     unary_opr();
+    match("LEFT_CURLY_BRACES");
+    stmt();
+    match("RIGHT_CURLY_BRACES");
     printf("Found for loop");
 }
 
@@ -239,6 +286,9 @@ void cond(){
         variable();
         rel_opr();
         variable();
+        match("LEFT_CURLY_BRACES");
+        stmt();
+        match("RIGHT_CURLY_BRACES");
     }
 
 void constants(){
@@ -275,8 +325,9 @@ void unary_opr(){
 void conditional_stmt(){
     match("IF_KW");
     cond();
-    expression();
-    match("SEMI_COLON");
+    match("LEFT_CURLY_BRACES");
+    stmt();
+    match("RIGHT_CURLY_BRACES");
     printf("Found if statement");
 }
 
@@ -293,63 +344,11 @@ void stmt(){
     
     //  parse_declaration();
     //  assignment();
-     output_statement();
+    // output_statement();
     //  input_statement();
     //  iterative_statement();
     //  conditional_stmt();
 }
-int main() {
-    
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening file\n");
-        return 1;
-    }else{
-       parser();
-    }
-
-    // while (fscanf(file, "%s", word) != EOF) {
-    //     words = (char **) realloc(words, (num_words + 1) * sizeof(char *));
-    //     words[num_words] = (char *) malloc((strlen(word) + 1) * sizeof(char));
-    //     strcpy(words[num_words], word);
-    //     num_words++;
-    //     printf("%s",word);
-    // }
-
-    fclose(file);
-    // parse_declaration();
-    // assignment();
-    // output_statement();
-    //input_statement();
-    //iterative_statement();
-    //conditional_stmt();
-    // if(currentToken == "int"){
-    //     printf("int");
-    // }else
-    //     printf("not int");
-    // printf("%s", currentToken);
-    // printf("%c", word[pos]);
-
-    // char* variable = currentToken;
-    // printf("%s", variable);
-    // print("STRING_KW");
-
-    // Print the words in the array
-    // for (int i = 0; i < num_words; i++) {
-    //     printf("%s\n", words[i]);
-    // }
-
-    
-
-    // Deallocate memory
-    for (int i = 0; i < num_words; i++) {
-        free(words[i]);
-    }
-    free(words);
-
-    return 0;
-}
-
 
 void getToken(){
     char ch = fgetc(file);
@@ -389,6 +388,6 @@ void getToken(){
         }
     }
     currentToken[index] = '\0';
-        //printf("Lexeme: %s\t",currentLexeme);
+        printf("Lexeme: %s\t",currentLexeme);
         printf("Token: %s\n",currentToken);
 }

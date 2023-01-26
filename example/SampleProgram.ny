@@ -1,0 +1,1 @@
+numero ny_int;

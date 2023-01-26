@@ -1,0 +1,3 @@
+numero			INT_KW
+ny_int		IDENTIFIER
+;				SEMI_COLON

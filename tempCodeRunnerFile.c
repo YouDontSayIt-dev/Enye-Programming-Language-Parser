@@ -1,2 +1,2 @@
-getToken();
-        getToken();
+
+                            lexerData[i] = lexerContent;                
