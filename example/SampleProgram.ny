@@ -1,2 +1,1 @@
-titik ny_char;
-
+basahin("String", ny_int);

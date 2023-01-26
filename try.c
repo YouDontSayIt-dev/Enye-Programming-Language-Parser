@@ -14,9 +14,12 @@ int num_words = 0;
 int strIndex = 0;
 char currentLexeme[100];
 char currentToken[20];
-int lineNo = 1;
-int lineNoMax = 1;
+int lineNo = 0;
+int lineNoMax = 0;
 int errorFlag = 0;
+
+char lexerContent;
+char lexerData[1000];
 
 FILE *file;
 char *filename = "example/SymbolTable.txt";
@@ -44,7 +47,7 @@ void unary_opr();
 void variable();
 void constants();
 
-void getToken();
+void parseToken();
 void parser();
 void stmts();
 void stmt();
@@ -65,8 +68,7 @@ int main() {
             inputfptr = fopen(in_filepath, "r");
             outputfptr = fopen(out_filepath, "w");
             
-            char lexerContent;
-            char lexerData[1000];  // variable to store contents of input file
+              // variable to store contents of input file
                 for(int i=0; i<sizeof(lexerData); i++) {
                     lexerContent = fgetc(inputfptr); // reads input file
                     if(lexerContent == EOF) {
@@ -75,14 +77,11 @@ int main() {
                             lexerData[i] = lexerContent;                
                     }
       
-      
        fclose(inputfptr);    
        lexer(lexerData);
        fclose(outputfptr);
        file = fopen(symbol_filepath, "r");
-       getToken();
        parser();
-       printf("%d",lineNo);
         fclose(file);
       
     
@@ -94,8 +93,9 @@ int main() {
 
 void parse_declaration() {
     data_type();
-    getToken();
+    parseToken();
     assignment();
+    lineNoMax = lineNo;
     //parse_declarator();
 }
 
@@ -113,7 +113,7 @@ void data_type(){
         printf("Found string declaration\n");
     }
     else {
-        printf("Invalid declaration\n");
+        printf("Invalid declaration at line: %d\n", lineNo);
         errorFlag = 1;
     }
 }
@@ -144,45 +144,48 @@ void data_type(){
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
     if (strcmp(currentToken, expected) != 0) {
-        printf("Error: unexpected token %s\n", currentToken);
+        printf("Error: unexpected token %s at line: %d %s\n", currentToken, lineNo, expected);
         errorFlag = 1;
-    } else {
-        
-
     }
 }
 
 // void match2(char** expected, int i) {
 //     if (strcmp(currentToken, expected[i]) == 0) {
-//         getToken();
+//         parseToken();
 //     } else {
 //         printf("Error: unexpected token %s\n", currentToken);
 //         errorFlag = 1;
 //     }
 // }
-
 void assignment() {
     match(currentToken);
-    getToken();
+    parseToken();
     if(strcmp(currentToken, "SEMI_COLON") == 0){
         match("SEMI_COLON");                
-        printf("Found assignment statement");
+        if(errorFlag == 0){
+            printf("Parsing assignment statement success\n");
+        }else{
+            printf("Parsing assignment statement failed");
+        }
     }else if(strcmp(currentToken, "ASS_OPR") == 0){
         
         match("ASS_OPR");
-        getToken();
+        parseToken();
         expression();
-        getToken();
         match("SEMI_COLON");
-        printf("Found assignment statement");
+        if(errorFlag == 0){
+            printf("Parsing assignment statement success\n");
+        }else{
+            printf("Parsing assignment statement failed");
     }
     }
-
+}
 
 void expression() {
     term();
-    while (strcmp(currentToken, "ADD_OPR") == 0 || strcmp(currentToken, "SUBT_OPR") == 0) {
+    while (strcmp(currentToken, "ADD_OPR") == 0 || strcmp(currentToken, "SUBT_OPR") == 0 || strcmp(currentToken, "COMMA") == 0) {
         match(currentToken);
+        parseToken();
         term();
     }
 }
@@ -191,6 +194,7 @@ void term() {
     factor();
     while (strcmp(currentToken, "MULT_OPR") == 0 || strcmp(currentToken, "DIV_OPR") == 0) {
         match(currentToken);
+        parseToken();
         factor();
     }
 }
@@ -199,16 +203,21 @@ void factor() {
     
     if (strcmp(currentToken, "REAL_NUMBER") == 0 || strcmp(currentToken, "INTEGER") == 0) {
         match(currentToken);
+        parseToken();
     } else if (strcmp(currentToken, "IDENTIFIER") == 0) {
         match(currentToken);
+        parseToken();
     }else if (strcmp(currentToken, "STRING_LITERAL") == 0){
         match(currentToken);
+        parseToken();
     }else if (strcmp(currentToken, "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
+        parseToken();
         expression();
         match("RIGHT_PARENTHESIS");
+        parseToken();
     }else {
-        printf("Error: unexpected token %s\n", currentToken);
+        printf("Error: unexpected token %s at line no: %d\n", currentToken, lineNo);
         errorFlag = 1;;
     }
 }
@@ -225,33 +234,55 @@ void factor() {
 
 //OUTPUT STATEMENT
 void output_statement() {
-    getToken();
     match("PRINTF_KW");
+    parseToken();
     match("LEFT_PARENTHESIS");
+    parseToken();
     expression();
     match("RIGHT_PARENTHESIS");
-   // match("SEMI_COLON");
-    printf("Found output statement");
+    parseToken();
+    match("SEMI_COLON");
+    if(errorFlag == 0){
+        printf("Parsing output statement success\n");
+    }else{
+        printf("Parsing output statement failed");
+    }
 }
 
 //INPUT STATEMENT
 void input_statement() {
     match("SCANF_KW");
+    parseToken();
+    match("LEFT_PARENTHESIS");
+    parseToken();
     expression();
+    match("RIGHT_PARENTHESIS");
+    parseToken();
     match("SEMI_COLON");
-    printf("Found input statement");
+    if(errorFlag == 0){
+        printf("Parsing input statement success\n");
+    }else{
+        printf("Parsing input statement failed");
+    }
 }
 
 
 // ITERATIVE STATEMENT
 void iterative_statement(){ 
     match("FOR_KW");
+    parseToken();
     assignment();
+    parseToken();
     cond();
+    parseToken();
     match("SEMI_COLON");
+    parseToken();
     unary_opr();
+    parseToken();
     match("LEFT_CURLY_BRACES");
+    parseToken();
     stmt();
+    parseToken();
     match("RIGHT_CURLY_BRACES");
     printf("Found for loop");
 }
@@ -295,10 +326,15 @@ void log_opr(){
 
 void cond(){
         variable();
+        parseToken();
         rel_opr();
+        parseToken();
         variable();
+        parseToken();
         match("LEFT_CURLY_BRACES");
+        parseToken();
         stmt();
+        parseToken();
         match("RIGHT_CURLY_BRACES");
     }
 
@@ -335,6 +371,7 @@ void unary_opr(){
 // Conditional Statements
 void conditional_stmt(){
     match("IF_KW");
+    parseToken();
     cond();
     match("LEFT_CURLY_BRACES");
     stmt();
@@ -343,10 +380,12 @@ void conditional_stmt(){
 }
 // START OF GRAMMAR RULE
 void parser(){
-    
+    do{
+         parseToken();
          stmts();
-    
-   
+         lineNoMax++;
+    }while(lineNo <= lineNoMax);
+       
 }
 
 void stmts(){
@@ -355,21 +394,20 @@ void stmts(){
 
 void stmt(){
     
-      parse_declaration();
+    //  parse_declaration();
     //  assignment();
     // output_statement();
-    //  input_statement();
+      input_statement();
     //  iterative_statement();
     //  conditional_stmt();
 }
 
-void getToken(){
+void parseToken(){
     char ch = fgetc(file);
     int index = 0;
 
     if(ch == '\n'){
-        
-        printf("Line %d\n", lineNo);
+        lineNo++;
         ch = fgetc(file);
         while(ch=='\n'){
             ch = fgetc(file);
@@ -395,6 +433,7 @@ void getToken(){
         index++;
         ch = fgetc(file);
     }
+
     currentToken[index] = '\0';
       //  printf("Lexeme: %s\t",currentLexeme);
         printf("Token: %s\n",currentToken);
