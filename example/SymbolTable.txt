@@ -1,14 +1,32 @@
 
-basahin			SCANF_KW
+numero			INT_KW
 
-(				LEFT_PARENTHESIS
+ny_nmr		IDENTIFIER
 
-String			STRING_LITERAL
+;				SEMI_COLON
 
-,				COMMA
+numero			INT_KW
 
-ny_int		IDENTIFIER
+ny_nmr		IDENTIFIER
 
-)				RIGHT_PARENTHESIS
+=				ASS_OPR
+
+;				SEMI_COLON
+
+numero			INT_KW
+
+ny_panint		IDENTIFIER
+
+;				SEMI_COLON
+
+lipon				STRING_KW
+
+ny_salita		IDENTIFIER
+
+=				ASS_OPR
+
+Mga			STRING_LITERAL
+
+Mga			STRING_LITERAL
 
 ;				SEMI_COLON

@@ -55,6 +55,10 @@ void tokenRoleMultiOperator(char ch, char ch2){
    fprintf(outputfptr,"\t\t\tLESS_THAN_OR_EQ_TO_OPR\n");
    else if (ch == '!' && ch2 == '=')
    fprintf(outputfptr,"\t\t\tNOT_EQUAL_TO_OPR\n");
+   else if (ch == '+' && ch2 == '+')
+   fprintf(outputfptr,"\t\t\tINC_OPR\n");
+   else if (ch == '-' && ch2 == '-')
+   fprintf(outputfptr,"\t\t\tDEC_OPR\n");
 }
 
 bool bracketsChecker(char ch) {
@@ -349,16 +353,22 @@ bool invalidSymbolsChecker(char* str){
 // if not, return true
 bool identifierChecker(char* str){
     int i, len = strlen(str);
-
-   for (i = 0; i <=len; i++) {
-      if (str[0] == 'n' && str[1] == 'y' && str[2] == '_')
-      return (true);
+         identifierFlag = 0;
+         for(i = 0; i <= len; i++){
+            if (str[i] == '_'){
+               identifierFlag++;
+            }
+         }
+      if (identifierFlag == 1){
+          return (true);
+      }else{
+            return (false);
+      }
+ 
    }
-   return (false);
-}
 
 void tokenRoleIdentifier(char* str){
-   if (str[0] == 'n' || str[1] == 'y' || str[2] == '_')
+   if (str[0] == 'n' && str[1] == 'y' && str[2] == '_')
    fprintf(outputfptr,"\tIDENTIFIER\n");
    else
    fprintf(outputfptr,"\t\t\tINVALID_IDENTIFIER\n");
@@ -544,14 +554,14 @@ void lexer(char* str) {
             tokenRoleNoiseWord(subStr);
             free (subStr);}
          else if(identifierChecker(subStr)== false){
-            if(identifierChecker(subStr)== true){
+            if(identifierFlag >= 1){
                // A keyword must have succeeding identifier
                // e.g. keyword ny_identifier (+1 -1 = flag: 0)
                // If a keyword (flag: 1) does not reset, it means that the succeeding lexeme 
                // is an invalid keyword, otherwise it is a syntax error
             //   fprintf(outputfptr,"Invalid %s\t", subStr);
                fprintf(outputfptr,"\n%s\t", subStr);
-               fprintf(outputfptr,"\tINVALID_LEXEME\n");
+               fprintf(outputfptr,"\tINVALID_IDENTIFIER\n");
                flag = 0;
                free (subStr);
             }
