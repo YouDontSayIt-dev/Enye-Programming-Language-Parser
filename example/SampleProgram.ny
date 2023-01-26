@@ -1,0 +1,2 @@
+titik ny_char;
+

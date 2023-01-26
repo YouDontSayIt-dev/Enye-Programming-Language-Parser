@@ -1,11 +1,27 @@
+#include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
+#include <stdlib.h>
+#include <stdbool.h>
+#include <conio.h>
+#include "include/lexer.h"
+#include "include/main.h"
+#include "lexer.c"
 
 char word[100];
 char **words = NULL;
 int num_words = 0;
+int strIndex = 0;
+char currentLexeme[100];
+char currentToken[20];
+int lineNo = 1;
+
+FILE *file;
+char *filename = "example/SymbolTable.txt";
+char in_filepath[100],out_filepath[100] = "example/SymbolTable.txt",
+parser_filepath[100] = "example/ParsingInput.txt",symbol_filepath[100] = "example/SymbolTable.txt"; // file path variable
+  int len;
+
 
 //DECLARATIVE STATEMENTS
 int pos;
@@ -14,6 +30,7 @@ int expected;
 void parse_declaration();
 void parse_declarator();
 void parse_initializer();
+void data_type();
 void assignment();
 void expression();
 void term();
@@ -23,45 +40,85 @@ void cond();
 void rel_opr();
 void unary_opr();
 void variable();
-void constant();
+void constants();
+
+void getToken();
+void parser();
+void stmts();
+void stmt();
+
+
+int main() {
+        /* FOR LEXER */
+      printf("Input file path: ");
+      scanf("%s",in_filepath);
+      len = strlen(in_filepath);
+      if (len <= 2) { // Checks if file path is invalid
+        printf("Invalid file path");
+        return 0;
+      }
+      // Checks if file extension is invalid
+      if(in_filepath[len-1] == 'y' && in_filepath[len-2] == 'n' && in_filepath[len-3] == '.'){
+            /* FOR LEXER */
+            inputfptr = fopen(in_filepath, "r");
+            outputfptr = fopen(out_filepath, "w");
+            
+            char lexerContent;
+            char lexerData[1000];  // variable to store contents of input file
+                for(int i=0; i<sizeof(lexerData); i++) {
+                    lexerContent = fgetc(inputfptr); // reads input file
+                    if(lexerContent == EOF) {
+                        break;
+                        }
+                            lexerData[i] = lexerContent;                
+                    }
+      
+      
+       fclose(inputfptr);    
+       lexer(lexerData);
+       fclose(outputfptr);
+       file = fopen(symbol_filepath, "r");
+       parser();
+        fclose(file);
+      
+    
+
+
+    return 0;
+}
+}
 
 void parse_declaration() {
-    if (strncmp(words[pos], "INT_KW", 6) == 0) {
-        // pos += 6;
-        pos++;
-        // parse_declarator();
+    getToken();
+    data_type();
+    assignment();
+    //parse_declarator();
+}
+
+void data_type(){
+    if (strcmp(currentToken, "INT_KW") == 0){
         printf("Found int declaration\n");
-        assignment();
     } 
-    else if (strncmp(words[pos], "CHAR_KW", 7) == 0) {
-        // pos += 7;
-        pos++;
-        // parse_declarator();
+    else if (strcmp(currentToken, "CHAR_KW") == 0) {
         printf("Found char declaration\n");
-        assignment();
     } 
-    else if (strncmp(words[pos], "FLOAT_KW", 8) == 0) {
-        // pos += 8;
-        pos++;
-        // parse_declarator();
+    else if (strcmp(currentToken, "FLOAT_KW") == 0) {
         printf("Found float declaration\n");
-        assignment();
     }
-    else if (strncmp(words[pos], "STRING_KW", 9) == 0) {
-        // pos += 9;
-        pos++;
-        // parse_declarator();
+    else if (strcmp(currentToken, "STRING_KW") == 0) {
         printf("Found string declaration\n");
-        assignment();
     }
     else {
         printf("Invalid declaration\n");
     }
 }
 
+
+
+
 // void parse_declarator() {
-//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
-//         if (strcmp(words[pos], "ASS_OPR") == 0) {
+//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
+//         if (strcmp(currentToken, "ASS_OPR") == 0) {
 //             // pos+=7;
 //             pos++;
 //             parse_initializer();
@@ -72,7 +129,7 @@ void parse_declaration() {
 // }
 
 // void parse_initializer() {
-//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
+//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
 //         // pos+= 10;
 //         pos++;
 //     }
@@ -81,66 +138,71 @@ void parse_declaration() {
 
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
-    if (strcmp(words[pos], expected) == 0) {
-        pos++;
+    if (strcmp(currentToken, expected) == 0) {
     } else {
-        printf("Error: unexpected token %s\n", words[pos]);
+        printf("Error: unexpected token %s\n", currentToken);
         exit(1);
     }
 }
 
 void match2(char** expected, int i) {
-    if (strcmp(words[pos], expected[i]) == 0) {
-        pos++;
+    if (strcmp(currentToken, expected[i]) == 0) {
+        getToken();
     } else {
-        printf("Error: unexpected token %s\n", words[pos]);
+        printf("Error: unexpected token %s\n", currentToken);
         exit(1);
     }
 }
 
 void assignment() {
-    char* variable = words[pos];
-    match2(words, pos);
-    if(strcmp(words[pos], "SEMI_COLON") == 0){
+    getToken();
+    match(currentToken);
+    getToken();
+    if(strcmp(currentToken, "SEMI_COLON") == 0){
         match("SEMI_COLON");                
-        printf("Assigning value to variable %s\n", variable);
-    }else{
+        printf("Found assignment statement");
+    }else if(strcmp(currentToken, "ASS_OPR") == 0){
+        
         match("ASS_OPR");
+        getToken();
         expression();
+        getToken();
         match("SEMI_COLON");
-        printf("Assigning value to variable %s\n", variable);
+        printf("Found assignment statement");
     }
-}
+    }
+
 
 void expression() {
     term();
-    while (strcmp(words[pos], "ADD_OPR") == 0 || strcmp(words[pos], "SUBT_OPR") == 0) {
-        match2(words, pos);
+    while (strcmp(currentToken, "ADD_OPR") == 0 || strcmp(currentToken, "SUBT_OPR") == 0) {
+        match(currentToken);
         term();
     }
 }
 
 void term() {
     factor();
-    while (strcmp(words[pos], "MULT_OPR") == 0 || strcmp(words[pos], "DIV_OPR") == 0) {
-        match2(words, pos);
+    while (strcmp(currentToken, "MULT_OPR") == 0 || strcmp(currentToken, "DIV_OPR") == 0) {
+        match(currentToken);
         factor();
     }
 }
 
 void factor() {
-    if (strcmp(words[pos], "REAL_NUMBER") == 0 || strcmp(words[pos], "INTEGER") == 0) {
-        match(words[pos]);
-    } else if (strcmp(words[pos], "IDENTIFIER") == 0) {
-        match(words[pos]);
-    }else if (strcmp(words[pos], "STRING_LITERAL") == 0) {
-        match(words[pos]);
-    }else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
+    
+    if (strcmp(currentToken, "REAL_NUMBER") == 0 || strcmp(currentToken, "INTEGER") == 0) {
+        match(currentToken);
+    } else if (strcmp(currentToken, "IDENTIFIER") == 0) {
+        match(currentToken);
+    }else if (strcmp(currentToken, "STRING_LITERAL") == 0){
+        match(currentToken);
+    }else if (strcmp(currentToken, "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
         expression();
         match("RIGHT_PARENTHESIS");
     }else {
-        printf("Error: unexpected token %s\n", words[pos]);
+        printf("Error: unexpected token %s\n", currentToken);
         exit(1);
     }
 }
@@ -157,9 +219,12 @@ void factor() {
 
 //OUTPUT STATEMENT
 void output_statement() {
+    getToken();
     match("PRINTF_KW");
+    match("LEFT_PARENTHESIS");
     expression();
-    match("SEMI_COLON");
+    match("RIGHT_PARENTHESIS");
+   // match("SEMI_COLON");
     printf("Found output statement");
 }
 
@@ -173,49 +238,52 @@ void input_statement() {
 
 
 // ITERATIVE STATEMENT
-void iterative_statement(){
+void iterative_statement(){ 
     match("FOR_KW");
     assignment();
     cond();
     match("SEMI_COLON");
     unary_opr();
+    match("LEFT_CURLY_BRACES");
+    stmt();
+    match("RIGHT_CURLY_BRACES");
     printf("Found for loop");
 }
 
 
 void rel_opr(){
-    if (strcmp(words[pos], "GREAT_OPR") == 0 ){
-        match(words[pos]);
+    if (strcmp(currentToken, "GREAT_OPR") == 0 ){
+        match(currentToken);
     } 
-    else if (strcmp(words[pos], "LESS_OPR") == 0){
-        match(words[pos]);
+    else if (strcmp(currentToken, "LESS_OPR") == 0){
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "NOT_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "NOT_OPR") == 0){ 
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "EQ_TO_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "EQ_TO_OPR") == 0){ 
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "NOT_EQUAL_TO_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "NOT_EQUAL_TO_OPR") == 0){ 
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "GRTR_THAN_OR_EQ_TO_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "GRTR_THAN_OR_EQ_TO_OPR") == 0){ 
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "LESS_THAN_OR_EQ_TO_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "LESS_THAN_OR_EQ_TO_OPR") == 0){ 
+        match(currentToken);
     }
 }
 
 void log_opr(){
-    if (strcmp(words[pos], "AND_OPR") == 0 ){
-        match(words[pos]);
+    if (strcmp(currentToken, "AND_OPR") == 0 ){
+        match(currentToken);
     } 
-    else if (strcmp(words[pos], "OR_OPR") == 0){
-        match(words[pos]);
+    else if (strcmp(currentToken, "OR_OPR") == 0){
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "NOT_OPR") == 0){ 
-        match(words[pos]);
+    else if (strcmp(currentToken, "NOT_OPR") == 0){ 
+        match(currentToken);
     }
 }
 
@@ -223,23 +291,26 @@ void cond(){
         variable();
         rel_opr();
         variable();
+        match("LEFT_CURLY_BRACES");
+        stmt();
+        match("RIGHT_CURLY_BRACES");
     }
 
 void constants(){
-    if (strcmp(words[pos], "INTEGER") == 0){
-        match(words[pos]);
+    if (strcmp(currentToken, "INTEGER") == 0){
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "REAL_NUMBER") == 0){
-        match(words[pos]);
+    else if (strcmp(currentToken, "REAL_NUMBER") == 0){
+        match(currentToken);
     }
-    else if (strcmp(words[pos], "STRING_LITERAL") == 0){
-        match(words[pos]);
+    else if (strcmp(currentToken, "STRING_LITERAL") == 0){
+        match(currentToken);
     }
 }
 
 void variable(){
-    if (strcmp(words[pos], "IDENTIFIER") == 0){
-        match(words[pos]);
+    if (strcmp(currentToken, "IDENTIFIER") == 0){
+        match(currentToken);
     }
     else{
         constants();
@@ -247,11 +318,11 @@ void variable(){
 }
 
 void unary_opr(){
-    if (strcmp(words[pos], "INC_OPR") == 0 ){
-        match(words[pos]);
+    if (strcmp(currentToken, "INC_OPR") == 0 ){
+        match(currentToken);
     } 
-    else if (strcmp(words[pos], "DEC_OPR") == 0){
-        match(words[pos]);
+    else if (strcmp(currentToken, "DEC_OPR") == 0){
+        match(currentToken);
     }
 }
 
@@ -259,58 +330,64 @@ void unary_opr(){
 void conditional_stmt(){
     match("IF_KW");
     cond();
-    expression();
-    match("SEMI_COLON");
+    match("LEFT_CURLY_BRACES");
+    stmt();
+    match("RIGHT_CURLY_BRACES");
     printf("Found if statement");
 }
+// START OF GRAMMAR RULE
+void parser(){
 
-int main() {
-    FILE *file;
-    char *filename = "file.txt";
+    stmts();
+}
 
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening file\n");
-        return 1;
-    }
+void stmts(){
+    stmt();
+}
 
-    while (fscanf(file, "%s", word) != EOF) {
-        words = (char **) realloc(words, (num_words + 1) * sizeof(char *));
-        words[num_words] = (char *) malloc((strlen(word) + 1) * sizeof(char));
-        strcpy(words[num_words], word);
-        num_words++;
-    }
-
-    fclose(file);
-    parse_declaration();
-    // assignment();
-    // output_statement();
-    //input_statement();
-    //iterative_statement();
-    // conditional_stmt();
-
-    // if(words[pos] == "int"){
-    //     printf("int");
-    // }else
+void stmt(){
     
-    //     printf("not int");
-    // printf("%s", words[pos]);
-    // printf("%c", word[pos]);
+      parse_declaration();
+    //  assignment();
+    // output_statement();
+    //  input_statement();
+    //  iterative_statement();
+    //  conditional_stmt();
+}
 
-    // char* variable = words[pos];
-    // printf("%s", variable);
-    // print("STRING_KW");
+void getToken(){
+    char ch = fgetc(file);
+    int index = 0;
 
-    // Print the words in the array
-    // for (int i = 0; i < num_words; i++) {
-    //     printf("%s\n", words[i]);
-    // }
-
-    // Deallocate memory
-    for (int i = 0; i < num_words; i++) {
-        free(words[i]);
+    if(ch == '\n'){
+        lineNo++;
+        //printf("Line %d\n", lineNo);
+        ch = fgetc(file);
+        while(ch=='\n'){
+            ch = fgetc(file);
+        }
     }
-    free(words);
+    // gets the lexeme
+    while(ch != '\t'){
+        currentLexeme[index] = ch;
+        index++;
+        ch = fgetc(file);
+    }
+    currentLexeme[index] = '\0';
 
-    return 0;
+    // skips all \t
+    while(ch == '\t'){
+        ch = fgetc(file);
+    }
+
+    // gets the token
+    index = 0;
+    while(ch != '\n'){
+        currentToken[index] = ch;
+        index++;
+        ch = fgetc(file);
+    }
+    currentToken[index] = '\0';
+      //  printf("Lexeme: %s\t",currentLexeme);
+        printf("Token: %s\n",currentToken);
 }

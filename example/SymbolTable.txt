@@ -1,0 +1,3 @@
+titik				CHAR_KW
+ny_char		IDENTIFIER
+;				SEMI_COLON
