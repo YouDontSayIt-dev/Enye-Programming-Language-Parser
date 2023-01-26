@@ -1,3 +1,14 @@
-titik				CHAR_KW
-ny_char		IDENTIFIER
+
+basahin			SCANF_KW
+
+(				LEFT_PARENTHESIS
+
+String			STRING_LITERAL
+
+,				COMMA
+
+ny_int		IDENTIFIER
+
+)				RIGHT_PARENTHESIS
+
 ;				SEMI_COLON
