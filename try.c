@@ -53,24 +53,24 @@ void parse_declaration() {
     }
 }
 
-void parse_declarator() {
-    while (strcmp(words[pos], "SEMI_COLON") == 1) {
-        if (strcmp(words[pos], "ASS_OPR") == 0) {
-            // pos+=7;
-            pos++;
-            parse_initializer();
-        }
-        // pos+= 10;
-        pos++;
-    }
-}
+// void parse_declarator() {
+//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
+//         if (strcmp(words[pos], "ASS_OPR") == 0) {
+//             // pos+=7;
+//             pos++;
+//             parse_initializer();
+//         }
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
 
-void parse_initializer() {
-    while (strcmp(words[pos], "SEMI_COLON") == 1) {
-        // pos+= 10;
-        pos++;
-    }
-}
+// void parse_initializer() {
+//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
 
 
 //ASSIGNMENT STATEMENTS
