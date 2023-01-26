@@ -29,50 +29,54 @@ void parse_declaration() {
     if (strncmp(words[pos], "INT_KW", 6) == 0) {
         // pos += 6;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found int declaration\n");
+        assignment();
     } 
     else if (strncmp(words[pos], "CHAR_KW", 7) == 0) {
         // pos += 7;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found char declaration\n");
+        assignment();
     } 
     else if (strncmp(words[pos], "FLOAT_KW", 8) == 0) {
         // pos += 8;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found float declaration\n");
+        assignment();
     }
     else if (strncmp(words[pos], "STRING_KW", 9) == 0) {
         // pos += 9;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found string declaration\n");
+        assignment();
     }
     else {
         printf("Invalid declaration\n");
     }
 }
 
-void parse_declarator() {
-    while (strcmp(words[pos], "SEMI_COLON") == 1) {
-        if (strcmp(words[pos], "ASS_OPR") == 0) {
-            // pos+=7;
-            pos++;
-            parse_initializer();
-        }
-        // pos+= 10;
-        pos++;
-    }
-}
+// void parse_declarator() {
+//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
+//         if (strcmp(words[pos], "ASS_OPR") == 0) {
+//             // pos+=7;
+//             pos++;
+//             parse_initializer();
+//         }
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
 
-void parse_initializer() {
-    while (strcmp(words[pos], "SEMI_COLON") == 1) {
-        // pos+= 10;
-        pos++;
-    }
-}
+// void parse_initializer() {
+//     while (strcmp(words[pos], "SEMI_COLON") == 1) {
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
 
 
 //ASSIGNMENT STATEMENTS
@@ -129,7 +133,9 @@ void factor() {
         match(words[pos]);
     } else if (strcmp(words[pos], "IDENTIFIER") == 0) {
         match(words[pos]);
-    } else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
+    }else if (strcmp(words[pos], "STRING_LITERAL") == 0) {
+        match(words[pos]);
+    }else if (strcmp(words[pos], "LEFT_PARENTHESIS") == 0) {
         match("LEFT_PARENTHESIS");
         expression();
         match("RIGHT_PARENTHESIS");
@@ -276,15 +282,17 @@ int main() {
     }
 
     fclose(file);
-    // parse_declaration();
+    parse_declaration();
     // assignment();
     // output_statement();
     //input_statement();
     //iterative_statement();
-    conditional_stmt();
+    // conditional_stmt();
+
     // if(words[pos] == "int"){
     //     printf("int");
     // }else
+    
     //     printf("not int");
     // printf("%s", words[pos]);
     // printf("%c", word[pos]);
