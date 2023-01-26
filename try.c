@@ -23,26 +23,30 @@ void parse_declaration() {
     if (strncmp(words[pos], "INT_KW", 6) == 0) {
         // pos += 6;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found int declaration\n");
+        assignment();
     } 
     else if (strncmp(words[pos], "CHAR_KW", 7) == 0) {
         // pos += 7;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found char declaration\n");
+        assignment();
     } 
     else if (strncmp(words[pos], "FLOAT_KW", 8) == 0) {
         // pos += 8;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found float declaration\n");
+        assignment();
     }
     else if (strncmp(words[pos], "STRING_KW", 9) == 0) {
         // pos += 9;
         pos++;
-        parse_declarator();
+        // parse_declarator();
         printf("Found string declaration\n");
+        assignment();
     }
     else {
         printf("Invalid declaration\n");
@@ -180,10 +184,10 @@ int main() {
 
     fclose(file);
 
-    // parse_declaration();
+    parse_declaration();
     // assignment();
     // output_statement();
-    input_statement();
+    // input_statement();
 
     // if(words[pos] == "int"){
     //     printf("int");
