@@ -1,1 +1,2 @@
-numero ny_int;
+titik ny_char;
+

@@ -30,6 +30,7 @@ int expected;
 void parse_declaration();
 void parse_declarator();
 void parse_initializer();
+void data_type();
 void assignment();
 void expression();
 void term();
@@ -77,7 +78,6 @@ int main() {
        lexer(lexerData);
        fclose(outputfptr);
        file = fopen(symbol_filepath, "r");
-       getToken();
        parser();
         fclose(file);
       
@@ -88,8 +88,15 @@ int main() {
 }
 }
 
+void parse_declaration() {
+    getToken();
+    data_type();
+    assignment();
+    //parse_declarator();
+}
+
 void data_type(){
-    if (strcmp(currentToken, "INT_KW")){
+    if (strcmp(currentToken, "INT_KW") == 0){
         printf("Found int declaration\n");
     } 
     else if (strcmp(currentToken, "CHAR_KW") == 0) {
@@ -107,37 +114,31 @@ void data_type(){
 }
 
 
-void parse_declaration() {
-    getToken();
-    data_type();
-    parse_declarator();
-}
 
-void parse_declarator() {
-    while (strcmp(currentToken, "SEMI_COLON") == 1) {
-        if (strcmp(currentToken, "ASS_OPR") == 0) {
-            // pos+=7;
-            pos++;
-            parse_initializer();
-        }
-        // pos+= 10;
-        pos++;
-    }
-}
 
-void parse_initializer() {
-    while (strcmp(currentToken, "SEMI_COLON") == 1) {
-        // pos+= 10;
-        pos++;
-    }
-}
+// void parse_declarator() {
+//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
+//         if (strcmp(currentToken, "ASS_OPR") == 0) {
+//             // pos+=7;
+//             pos++;
+//             parse_initializer();
+//         }
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
+
+// void parse_initializer() {
+//     while (strcmp(currentToken, "SEMI_COLON") == 1) {
+//         // pos+= 10;
+//         pos++;
+//     }
+// }
 
 
 //ASSIGNMENT STATEMENTS
 void match(char* expected) {
     if (strcmp(currentToken, expected) == 0) {
-        pos++;
-        getToken();
     } else {
         printf("Error: unexpected token %s\n", currentToken);
         exit(1);
@@ -147,7 +148,6 @@ void match(char* expected) {
 void match2(char** expected, int i) {
     if (strcmp(currentToken, expected[i]) == 0) {
         getToken();
-        pos++;
     } else {
         printf("Error: unexpected token %s\n", currentToken);
         exit(1);
@@ -156,23 +156,27 @@ void match2(char** expected, int i) {
 
 void assignment() {
     getToken();
-    char* variable = currentToken;
-    match2(words, pos);
+    match(currentToken);
+    getToken();
     if(strcmp(currentToken, "SEMI_COLON") == 0){
         match("SEMI_COLON");                
-        printf("Assigning value to variable %s\n", variable);
-    }else{
+        printf("Found assignment statement");
+    }else if(strcmp(currentToken, "ASS_OPR") == 0){
+        
         match("ASS_OPR");
+        getToken();
         expression();
+        getToken();
         match("SEMI_COLON");
-        printf("Assigning value to variable %s\n", variable);
+        printf("Found assignment statement");
     }
-}
+    }
+
 
 void expression() {
     term();
     while (strcmp(currentToken, "ADD_OPR") == 0 || strcmp(currentToken, "SUBT_OPR") == 0) {
-        match2(words, pos);
+        match(currentToken);
         term();
     }
 }
@@ -180,12 +184,13 @@ void expression() {
 void term() {
     factor();
     while (strcmp(currentToken, "MULT_OPR") == 0 || strcmp(currentToken, "DIV_OPR") == 0) {
-        match2(words, pos);
+        match(currentToken);
         factor();
     }
 }
 
 void factor() {
+    
     if (strcmp(currentToken, "REAL_NUMBER") == 0 || strcmp(currentToken, "INTEGER") == 0) {
         match(currentToken);
     } else if (strcmp(currentToken, "IDENTIFIER") == 0) {
@@ -342,7 +347,7 @@ void stmts(){
 
 void stmt(){
     
-    //  parse_declaration();
+      parse_declaration();
     //  assignment();
     // output_statement();
     //  input_statement();
@@ -378,16 +383,11 @@ void getToken(){
     // gets the token
     index = 0;
     while(ch != '\n'){
-        if(ch != EOF){
         currentToken[index] = ch;
         index++;
         ch = fgetc(file);
-        }
-        else{
-            break;
-        }
     }
     currentToken[index] = '\0';
-        printf("Lexeme: %s\t",currentLexeme);
+      //  printf("Lexeme: %s\t",currentLexeme);
         printf("Token: %s\n",currentToken);
 }
