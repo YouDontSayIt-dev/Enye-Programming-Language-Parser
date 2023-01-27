@@ -136,11 +136,11 @@ void data_type(){
 //if it is an invalide, it will print an error message
 void match(char* expected) {
     if (strcmp("INVALID_IDENTIFIER", expected) == 0) {
-        printf("Error: unexpected token %s at line: %d\n", currentToken, lineNo);
+        printf("Error: unexpected token %s at line: %d\n", currentToken, stmtFlag);
         errorFlag = 1;
     }
     else if (strcmp(currentToken, expected) != 0) {
-        printf("Error: unexpected token %s at line: %d\n", currentToken, lineNo);
+        printf("Error: unexpected token %s at line: %d, expected token is %s\n", currentToken, stmtFlag, expected);
         errorFlag = 1;
     }
 }
@@ -467,10 +467,6 @@ void unary_opr(){
 
 //a recursive function that parses else statements
 void else_stmt(){
-    //if the token is an else keyword, it will match the token to the expected token
-    match("ELSE_KW");
-    //and will get the next token
-    parseToken();
     //it will then match the token to the expected token
     match("LEFT_CURLY_BRACES");
     //and will get the next token
@@ -491,10 +487,6 @@ void else_stmt(){
 
 //a recursive function that parses else if statements
 void else_if_stmt(){
-    //if the token is an else keyword, it will match the token to the expected token
-    match("ELSE_KW");
-    //and will get the next token
-    parseToken();
     //it will then match the token to the expected token
     match("IF_KW");
     //and will get the next token
@@ -505,8 +497,8 @@ void else_if_stmt(){
     parseToken();
     //it will then call the function cond()
     cond();
-    //and will get the next token
     parseToken();
+    //and will get the next token
     //it will then match the token to the expected token
     match("RIGHT_PARENTHESIS");
     //and will get the next token
@@ -550,7 +542,7 @@ void conditional_stmt(){
     //and will get the next token
     parseToken();
     //it will then match the token to the expected token
-    match("LEFT_CURLY_BRACES");
+    match("LEFT_CURLY_BRACES");    
     //and will get the next token
     parseToken();
     //it will then call the function stmt()
@@ -560,6 +552,8 @@ void conditional_stmt(){
     //it will then match the token to the expected token
     match("RIGHT_CURLY_BRACES");
     //if the error flag is 0, it will print a success message
+    parseToken();
+    stmt();
     if(errorFlag == 0){
         printf("Parsing conditional statement success\n");
     }else{
@@ -615,12 +609,11 @@ void stmt(){
             conditional_stmt();
         }
         else if(strcmp(currentToken, "ELSE_KW") == 0){
-            else_stmt();
-        }
-        else if(strcmp(currentToken, "ELSE_KW") == 0){
             parseToken();
             if(strcmp(currentToken, "IF_KW") == 0){
                 else_if_stmt();
+            }else{
+                else_stmt();
             }
         }
         else{
