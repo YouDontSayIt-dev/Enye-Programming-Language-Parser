@@ -1,4 +1,4 @@
-numero ny_nmr; 
+numero ny_nmr;
 numero ny_nmr = 1;  
 numero ny_panint = ny_nmr;
 
@@ -8,17 +8,35 @@ lipon ny_salita = 1*(1+2);
 
 ipakita("Teksto");  
 
-basahin("String", ny_int); 
+basahin("String", ny_int);
+
+kapag (ny_int == 3){
+    basahin("String", ny_int);
+}
+
+kapag (ny_int == 5){
+    basahin("String", ny_int);
+}
+edi{
+    ipakita("Editor");
+}
 
 kapag (ny_int <= 3){
-    bawat(ny_int = 0; ny_int < 5; ny_int++ ){
-        bawat(ny_panint = 0; ny_panint < 5; ny_panint++ ){
-            ipakita("Wow ang galing");
-        }
-    }
+    ipakita("Test");
 }edi kapag (ny_int == 0){
     ipakita("Editor");
 }edi{
     ipakita(ny_salita);
 }
+
+bawat(ny_int = 0; ny_int < 5; ny_int++ ){
+        bawat(ny_panint = 0; ny_panint < 5; ny_panint++ ){
+            ipakita("Wow ang galing");
+        }
+    }
+
+
+bawat(ny_panint = 0; ny_panint < 5; ny_panint++ ){
+            ipakita("Wow ang galing");
+        }
 
