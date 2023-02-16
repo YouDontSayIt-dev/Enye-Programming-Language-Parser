@@ -14,7 +14,7 @@ int num_words = 0;
 int strIndex = 0;
 char currentLexeme[100];
 char currentToken[20];
-int lineNo = 0;
+int lineNo = 1;
 int lineNoMax = 0;
 int errorFlag = 0;
 int stmtFlag = 0;
@@ -162,6 +162,7 @@ void assignment() {
             printf("Parsing assignment statement success\n");
         }else{
             printf("Parsing assignment statement failed\n");
+            errorFlag = 0;
         }
     }else if(strcmp(currentToken, "ASS_OPR") == 0){
         //if the token is not a semi-colon, it will match the token to the expected token
@@ -178,9 +179,14 @@ void assignment() {
         match("SEMI_COLON");
         if(errorFlag == 0){
             printf("Parsing assignment statement success\n");
+            errorFlag = 0;
         }else{
             printf("Parsing assignment statement failed\n");
+            errorFlag = 0;
     }
+    }else{
+        printf("Parsing assignment statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -290,8 +296,10 @@ void output_statement() {
     //if the error flag is 0, it will print a success message
     if(errorFlag == 0){
         printf("Parsing output statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing output statement failed");
+        printf("Parsing output statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -318,8 +326,10 @@ void input_statement() {
     //if the error flag is 0, it will print a success message
     if(errorFlag == 0){
         printf("Parsing input statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing input statement failed");
+        printf("Parsing input statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -373,8 +383,10 @@ void iterative_statement(){
     //if the error flag is 0, it will print a success message
     if(errorFlag == 0){
         printf("Parsing iterative statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing iterative statement failed");
+        printf("Parsing iterative statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -480,8 +492,10 @@ void else_stmt(){
     //if the error flag is 0, it will print a success message
     if(errorFlag == 0){
         printf("Parsing else statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing else statement failed");
+        printf("Parsing else statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -516,8 +530,10 @@ void else_if_stmt(){
     //if the error flag is 0, it will print a success message
     if(errorFlag == 0){
         printf("Parsing else if statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing else if statement failed");
+        printf("Parsing else if statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -552,12 +568,12 @@ void conditional_stmt(){
     //it will then match the token to the expected token
     match("RIGHT_CURLY_BRACES");
     //if the error flag is 0, it will print a success message
-    parseToken();
-    stmt();
     if(errorFlag == 0){
         printf("Parsing conditional statement success\n");
+        errorFlag = 0;
     }else{
-        printf("Parsing conditional statement failed");
+        printf("Parsing conditional statement failed\n");
+        errorFlag = 0;
     }
 }
 
@@ -617,7 +633,7 @@ void stmt(){
             }
         }
         else{
-            printf("Error in line %d: Invalid statement", stmtFlag);
+            printf("Error in line %d: Invalid statement\n", stmtFlag);
         }
 }
 
@@ -629,7 +645,6 @@ void parseToken(){
     //if ch is a \n, it will increment the line number
     //while ch is a \n, it will get the next character
     if(ch == '\n'){
-        lineNo++;
         ch = fgetc(file);
         while(ch=='\n'){
             ch = fgetc(file);
@@ -657,6 +672,7 @@ void parseToken(){
     }
 
     currentToken[index] = '\0';
+    lineNo++;
       //  printf("Lexeme: %s\t",currentLexeme);
         printf("Token: %s\n",currentToken);
 }
