@@ -184,7 +184,20 @@ void assignment() {
             printf("Parsing assignment statement failed\n");
             errorFlag = 0;
     }
-    }else{
+    }else if(strcmp(currentToken, "COMMA") == 0){
+        match("COMMA");
+        parseToken();
+        expression();
+        match("SEMI_COLON");
+        if(errorFlag == 0){
+            printf("Parsing assignment statement success\n");
+            errorFlag = 0;
+        }else{
+            printf("Parsing assignment statement failed\n");
+            errorFlag = 0;
+    }
+    }
+    else{
         printf("Parsing assignment statement failed\n");
         errorFlag = 0;
     }
