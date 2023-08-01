@@ -12,12 +12,12 @@ ENYE’s core philosophy is to allow aspiring Filipino programmers to code in th
 ## DEVELOPERS:
 | Name  | Role |
 | ------------- | ------------- |
-| Mathew James Muyco  |   |
-| Eunice Ando  |   |
-| Marifel Calibuso  |   |
-| James Luis Blanco  |   |
-| Francheska Reynoso  |   |
-| Reymar Sison  |   |
-| John Kenly Solosa  |   |
+| Mathew James Muyco  | Project Manager |
+| James Luis Blanco  | Team Leader |
+| Eunice Ando  | Developer |
+| Marifel Calibuso  | Developer |
+| Francheska Reynoso  | Developer |
+| Reymar Sison  | Developer |
+| John Kenly Solosa  | Developer |
 
-last edited: Jan 23, 2022
+last edited: August 1, 2022
